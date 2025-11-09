@@ -1,0 +1,52 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "OkC-KJirpFS-1LqNzUOiU",
+      "type": "text",
+      "x": 728,
+      "y": 235,
+      "width": 244.7798614501953,
+      "height": 75,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "av",
+      "roundness": null,
+      "seed": 1994371993,
+      "version": 71,
+      "versionNonce": 1161621815,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1762583479729,
+      "link": null,
+      "locked": false,
+      "text": "Public Routes\n    Open Publice Routes: \n    Auth Routes: ",
+      "fontSize": 20,
+      "fontFamily": 5,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Public Routes\n    Open Publice Routes: \n    Auth Routes: ",
+      "autoResize": true,
+      "lineHeight": 1.25
+    }
+  ],
+  "appState": {
+    "gridSize": 20,
+    "gridStep": 5,
+    "gridModeEnabled": false,
+    "viewBackgroundColor": "#ffffff",
+    "lockedMultiSelections": {}
+  },
+  "files": {}
+}
