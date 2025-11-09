@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { useActionState } from "react";
 import { Button } from "./ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "./ui/field";
 import { Input } from "./ui/input";
+import loginUser from "@/services/auth/loginUser";
 
 const LoginForm = () => {
+    const [state, formAction, isPending] = useActionState(loginUser, null)
   return (
-    <form>
+    <form action={formAction}>
       <FieldGroup>
         <div className="grid grid-cols-1 gap-4">
           {/* Email */}
@@ -37,6 +40,7 @@ const LoginForm = () => {
           <Field>
             <Button type="submit">
               {/* {isPending ? "Logging in..." : "Login"} */}
+              Login
             </Button>
 
             <FieldDescription className="px-6 text-center">
