@@ -2,23 +2,28 @@
 
 import z from "zod";
 
-const registerValidationZodSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  address: z.string().optional(),
-  email: z.email({ message: "Valid email is required" }),
-  password: z
-    .string()
-    .min(6, {
-      error: "Password is required and must be at least 6 characters long",
-    })
-    .max(100, {
-      error: "Password must be at most 100 characters long",
+const registerValidationZodSchema = z
+  .object({
+    name: z.string().min(1, { message: "Name is required" }),
+    address: z.string().optional(),
+    email: z.email({ message: "Valid email is required" }),
+    password: z
+      .string()
+      .min(6, {
+        error: "Password is required and must be at least 6 characters long",
+      })
+      .max(100, {
+        error: "Password must be at most 100 characters long",
+      }),
+    confirmPassword: z.string().min(6, {
+      error:
+        "Confirm Password is required and must be at least 6 characters long",
     }),
-  confirmPassword: z.string().min(6, {
-    error:
-      "Confirm Password is required and must be at least 6 characters long",
-  }),
-});
+  })
+  .refine((data: any) => data.password === data.confirmPassword, {
+    error: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 const registerPatient = async (
   currentState: any,
@@ -45,7 +50,7 @@ const registerPatient = async (
 
     console.log("validatedFields : ", validatedFields);
 
-        if (!validatedFields.success) {
+    if (!validatedFields.success) {
       return {
         success: false,
         errors: validatedFields.error.issues.map((issue) => {
