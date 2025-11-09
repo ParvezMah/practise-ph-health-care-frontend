@@ -5,16 +5,10 @@ import { useActionState } from "react";
 import { Button } from "./ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "./ui/field";
 import { Input } from "./ui/input";
+import registerPatient from "@/services/auth/registerPatient";
 
 const RegisterForm = () => {
-  const [state, formAction, isPending] = useActionState(
-    (currentState: any, formData: any) => {
-      console.log("currentState : ", currentState);
-      console.log("formData : ", formData.get("name"));
-      return { success: true };
-    },
-    null
-  );
+  const [state, formAction, isPending] = useActionState(registerPatient,null);
   return (
     <form action={formAction}>
       <FieldGroup>
