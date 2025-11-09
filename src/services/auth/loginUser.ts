@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
-
 import { parse } from "cookie";
 import { cookies } from "next/headers";
 import z from "zod";
@@ -30,7 +29,7 @@ const loginUser = async (_currentState: any, formData: any): Promise<any> => {
       password: formData.get("password"),
     };
 
-    console.log("loginData : ", loginData)
+    console.log("loginData : ", loginData);
 
     // Validating loginData befor sending to DB
     const validatedData = loginvalidationZodSchema.safeParse(loginData);
@@ -56,14 +55,13 @@ const loginUser = async (_currentState: any, formData: any): Promise<any> => {
       },
     });
 
-    console.log("res : ", res)
-    console.log("res.headers : ", res.headers)
+    console.log("res : ", res);
+    console.log("res.headers : ", res.headers);
 
-    
     const result = await res.json();
 
     const setCookieHeaders = res.headers.getSetCookie();
-    console.log("setCookieHeaders : ", setCookieHeaders)
+    console.log("setCookieHeaders : ", setCookieHeaders);
 
     if (setCookieHeaders && setCookieHeaders.length > 0) {
       setCookieHeaders.forEach((cookie: string) => {
@@ -93,21 +91,23 @@ const loginUser = async (_currentState: any, formData: any): Promise<any> => {
     cookieStore.set("accessToken", accessTokenObject.accessToken, {
       secure: true,
       httpOnly: true,
-      maxAge: parseInt(accessTokenObject["Max-Age"]),
+      maxAge: parseInt(accessTokenObject["Max-Age"]) || 1000 * 60 * 60,
       path: accessTokenObject.Path || "/",
+      sameSite: accessTokenObject["SameSite"] || "none",
     });
 
     cookieStore.set("refreshToken", refreshTokenObject.refreshToken, {
       secure: true,
       httpOnly: true,
-      maxAge: parseInt(refreshTokenObject["Max-Age"]),
+      maxAge:
+        parseInt(refreshTokenObject["Max-Age"]) || 1000 * 60 * 60 * 24 * 90,
       path: refreshTokenObject.Path || "/",
+      sameSite: refreshTokenObject["SameSite"] || "none",
     });
 
     return {
       result,
     };
-
   } catch (error) {
     console.log(error);
     return { error: "Login failed" };
