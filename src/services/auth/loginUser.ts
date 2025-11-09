@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import z, { success } from "zod";
+"use server";
+
+
+import { parse } from "cookie";
+import { cookies } from "next/headers";
+import z from "zod";
 
 const loginvalidationZodSchema = z.object({
   email: z.email({
@@ -17,27 +22,31 @@ const loginvalidationZodSchema = z.object({
 
 const loginUser = async (_currentState: any, formData: any): Promise<any> => {
   try {
+    let accessTokenObject: null | any = null;
+    let refreshTokenObject: null | any = null;
+
     const loginData = {
       email: formData.get("email"),
       password: formData.get("password"),
     };
 
+    console.log("loginData : ", loginData)
+
     // Validating loginData befor sending to DB
-    const validatedData = loginvalidationZodSchema.safeParse(loginData)
-    console.log("validatedData : ", validatedData)
+    const validatedData = loginvalidationZodSchema.safeParse(loginData);
+    console.log("validatedData : ", validatedData);
 
-    if(!validatedData.success){
-        return {
-            success: false,
-            errors: validatedData.error.issues.map((issue)=>{
-                return {
-                    field: issue.path[0],
-                    message: issue.message,
-                }
-            })
-        }
+    if (!validatedData.success) {
+      return {
+        success: false,
+        errors: validatedData.error.issues.map((issue) => {
+          return {
+            field: issue.path[0],
+            message: issue.message,
+          };
+        }),
+      };
     }
-
 
     const res = await fetch("http://localhost:5000/api/v1/auth/login", {
       method: "POST",
@@ -45,11 +54,60 @@ const loginUser = async (_currentState: any, formData: any): Promise<any> => {
       headers: {
         "content-Type": "application/json",
       },
-    }).then((res) => res.json());
+    });
 
-    console.log("login res : ", res);
+    console.log("res : ", res)
+    console.log("res.headers : ", res.headers)
 
-    return res;
+    
+    const result = await res.json();
+
+    const setCookieHeaders = res.headers.getSetCookie();
+    console.log("setCookieHeaders : ", setCookieHeaders)
+
+    if (setCookieHeaders && setCookieHeaders.length > 0) {
+      setCookieHeaders.forEach((cookie: string) => {
+        const parsedCookie = parse(cookie);
+
+        if (parsedCookie["accessToken"]) {
+          accessTokenObject = parsedCookie;
+        }
+        if (parsedCookie["refreshToken"]) {
+          refreshTokenObject = parsedCookie;
+        }
+      });
+    } else {
+      throw new Error("No Set-Cookie header found");
+    }
+
+    if (!accessTokenObject) {
+      throw new Error("Tokens not found in cookies");
+    }
+
+    if (!refreshTokenObject) {
+      throw new Error("Tokens not found in cookies");
+    }
+
+    const cookieStore = await cookies();
+
+    cookieStore.set("accessToken", accessTokenObject.accessToken, {
+      secure: true,
+      httpOnly: true,
+      maxAge: parseInt(accessTokenObject["Max-Age"]),
+      path: accessTokenObject.Path || "/",
+    });
+
+    cookieStore.set("refreshToken", refreshTokenObject.refreshToken, {
+      secure: true,
+      httpOnly: true,
+      maxAge: parseInt(refreshTokenObject["Max-Age"]),
+      path: refreshTokenObject.Path || "/",
+    });
+
+    return {
+      result,
+    };
+
   } catch (error) {
     console.log(error);
     return { error: "Login failed" };
