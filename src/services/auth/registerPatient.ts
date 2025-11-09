@@ -95,3 +95,5 @@ const registerPatient = async (
 };
 
 export default registerPatient;
+
+// // 66-10 Module Summary
